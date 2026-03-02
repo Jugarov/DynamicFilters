@@ -19,8 +19,22 @@ class HatOverlayEffect(BaseEffect):
         h, w, _ = frame.shape
 
         # 📏 1. Escalado usando bounding box
-        face_width = int(bbox.width)
-        face_height = int(bbox.height)
+        x1, y1, x2, y2 = bbox
+
+        # Clamping a límites del frame
+        h, w = frame.shape[:2]
+
+        x1 = max(0, min(w, x1))
+        x2 = max(0, min(w, x2))
+        y1 = max(0, min(h, y1))
+        y2 = max(0, min(h, y2))
+
+        face_width = x2 - x1
+        face_height = y2 - y1
+
+        # 🔥 Validación crítica
+        if face_width <= 5 or face_height <= 5:
+            return frame
 
         hat_width = int(face_width * 1.4)
         scale = hat_width / self.hat.shape[1]
